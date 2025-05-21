@@ -1,21 +1,26 @@
 from odoo import http
 from odoo.http import request
-import json
 
-API_TOKEN = "MI_TOKEN_SECRETO"  # Puedes mover esto a parámetros del sistema si deseas
+
+VALID_TOKENS = {
+    "MI_TOKEN": "api_user@example.com"  
+}
 
 class SaleOrderAPIController(http.Controller):
 
     @http.route('/api/sale_order/create', type='json', auth='public', methods=['POST'], csrf=False)
     def create_sale_order(self, **kwargs):
         try:
-            # Leer token del header
-            token = request.httprequest.headers.get('X-API-Token')
-            if token != API_TOKEN:
-                return {"error": "Token inválido o faltante"}
+            # Validar token Bearer
+            auth_header = request.httprequest.headers.get('Authorization')
+            if not auth_header or not auth_header.startswith("Bearer "):
+                return {"error": "Encabezado Authorization con Bearer token requerido"}
+
+            token = auth_header.split("Bearer ")[-1]
+            if token not in VALID_TOKENS:
+                return {"error": "Token inválido"}
 
             data = request.jsonrequest
-
             partner_id = data.get('partner_id')
             order_lines_data = data.get('order_lines', [])
 
