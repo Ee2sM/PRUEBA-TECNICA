@@ -1,10 +1,9 @@
 from odoo import http
 from odoo.http import request
+import logging
+_logger = logging.getLogger(__name__)
 
-
-VALID_TOKENS = {
-    "MI_TOKEN": "api_user@example.com"  
-}
+VALID_TOKENS = "api_user@example.com"
 
 class SaleOrderAPIController(http.Controller):
 
@@ -20,10 +19,15 @@ class SaleOrderAPIController(http.Controller):
             if token not in VALID_TOKENS:
                 return {"error": "Token inválido"}
 
-            data = request.jsonrequest
+            data = kwargs  # <- aquí usamos directamente los kwargs
+
             partner_id = data.get('partner_id')
             order_lines_data = data.get('order_lines', [])
 
+            _logger.info("*********************PARTNER ID********************")
+            _logger.info(partner_id)
+            _logger.info("*********************ORDER LINES DATA**************")
+            _logger.info(order_lines_data)
             if not partner_id or not order_lines_data:
                 return {"error": "Faltan datos obligatorios: partner_id y order_lines"}
 
