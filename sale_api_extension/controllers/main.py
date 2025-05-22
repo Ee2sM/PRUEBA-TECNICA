@@ -19,7 +19,7 @@ class SaleOrderAPIController(http.Controller):
             if token not in VALID_TOKENS:
                 return {"error": "Token inválido"}
 
-            data = kwargs  # <- aquí usamos directamente los kwargs
+            data = request.get_json_data()  # <- aquí usamos directamente los kwargs
 
             partner_id = data.get('partner_id')
             order_lines_data = data.get('order_lines', [])
